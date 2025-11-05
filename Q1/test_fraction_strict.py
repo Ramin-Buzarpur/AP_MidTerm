@@ -1,4 +1,3 @@
-
 import unittest
 from fractionlib import Fraction, MixedFraction
 

@@ -7,7 +7,6 @@ def _gcd(a, b):
 @total_ordering
 class Fraction:
     __slots__ = ("_numerator", "_denominator")
-
     def __init__(self, numerator, denominator=None):
         if isinstance(numerator, str):
             if denominator is not None:
@@ -74,7 +73,6 @@ class Fraction:
             return other
         return NotImplemented
 
-    # Arithmetic
     def __add__(self, other):
         other = self._coerce(other)
         if other is NotImplemented:
@@ -122,14 +120,11 @@ class Fraction:
         return self.__class__(num, den)
 
     def __rtruediv__(self, other):
-        # Support int / Fraction and Fraction / Fraction via our own math (no float)
         if isinstance(other, int):
             if self._numerator == 0:
                 raise ZeroDivisionError("Division by zero")
-            # (other/1) / (n/d) = other*d / n
             return Fraction(other * self._denominator, self._numerator)
         if isinstance(other, Fraction):
-            # other / self
             return other.__truediv__(self)
         raise TypeError("Unsupported type for right-division")
 
@@ -198,7 +193,7 @@ class MixedFraction(Fraction):
     def __str__(self):
         if self._denominator == 1:
             return str(self._numerator)
-        whole = int(self._numerator / self._denominator)  # trunc toward zero
+        whole = int(self._numerator / self._denominator)
         rem = abs(self._numerator) - abs(whole) * self._denominator
         if rem == 0:
             return str(whole)

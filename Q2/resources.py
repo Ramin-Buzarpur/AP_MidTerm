@@ -2,9 +2,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 
 class Resource(ABC):
-    """Abstract base for hardware resources with safe invariants."""
     __slots__ = ("_name", "_manufacturer", "_total", "_allocated")
-
     def __init__(self, name: str, manufacturer: str, total: int, allocated: int):
         if self.__class__ is Resource:
             raise TypeError("Resource is abstract and cannot be instantiated directly")
@@ -16,11 +14,9 @@ class Resource(ABC):
             raise ValueError("allocated cannot exceed total")
         self._validate_specific()
 
-    # Hook for subclasses
     @abstractmethod
     def _validate_specific(self) -> None: ...
 
-    # Read-only properties
     @property
     def name(self) -> str: return self._name
     @property
@@ -32,7 +28,6 @@ class Resource(ABC):
     @property
     def category(self) -> str: return self.__class__.__name__
 
-    # Behaviors
     def claim(self, n: int) -> None:
         n = self._validate_int_pos("n", n)
         if self._allocated + n > self._total:
@@ -56,7 +51,6 @@ class Resource(ABC):
         n = self._validate_int_pos("n", n)
         self._total += n
 
-    # Representation
     def __repr__(self) -> str:
         return (f"{self.__class__.__name__}("
                 f"name={self._name!r}, manufacturer={self._manufacturer!r}, "
@@ -69,7 +63,6 @@ class Resource(ABC):
     def _repr_tail(self) -> str: return ""
     def _str_tail(self) -> str: return ""
 
-    # Validators
     @staticmethod
     def _validate_str(field: str, value) -> str:
         if not isinstance(value, str) or not value.strip():
@@ -92,7 +85,6 @@ class Resource(ABC):
             raise ValueError(f"{field} must be > 0")
         return value
 
-
 class Storage(Resource):
     __slots__ = ("_capacity_GB",)
     def __init__(self, name: str, manufacturer: str, total: int, allocated: int, capacity_GB: int):
@@ -103,7 +95,6 @@ class Storage(Resource):
     def _validate_specific(self) -> None: return None
     def _repr_tail(self) -> str: return f", capacity_GB={self._capacity_GB!r}"
     def _str_tail(self) -> str: return f", capacity_GB={self._capacity_GB}"
-
 
 class CPU(Resource):
     __slots__ = ("_cores", "_socket", "_power_watts")

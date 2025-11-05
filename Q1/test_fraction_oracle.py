@@ -3,10 +3,8 @@ import unittest, random
 from fractions import Fraction as PF
 from fractionlib import Fraction
 
-RANGE = 50  # keep small for speed in CI
-
+RANGE = 50
 def to_our(pf: PF) -> Fraction:
-    # Convert Python's fractions.Fraction to our Fraction
     return Fraction(pf.numerator, pf.denominator)
 
 class FractionOracleSuite(unittest.TestCase):
@@ -22,8 +20,6 @@ class FractionOracleSuite(unittest.TestCase):
             y = Fraction(c, d)
             X = PF(a, b)
             Y = PF(c, d)
-
-            # +, -, *, /
             self.assertEqual(x + y, to_our(X + Y))
             self.assertEqual(x - y, to_our(X - Y))
             self.assertEqual(x * y, to_our(X * Y))
@@ -33,7 +29,6 @@ class FractionOracleSuite(unittest.TestCase):
                 with self.assertRaises(ZeroDivisionError):
                     _ = x / y
 
-            # Int interop
             k = random.randint(-7, 7)
             self.assertEqual(x + k, to_our(X + k))
             self.assertEqual(k + x, to_our(k + X))
@@ -48,14 +43,11 @@ class FractionOracleSuite(unittest.TestCase):
                 else:
                     self.assertEqual(k / x, to_our(k / X))
             else:
-                # x / 0 must raise; 0 / x must NOT raise unless x == 0
                 with self.assertRaises(ZeroDivisionError): _ = x / k
                 if x == Fraction(0, 1):
                     with self.assertRaises(ZeroDivisionError): _ = k / x
                 else:
                     self.assertEqual(k / x, to_our(PF(k, 1) / X))
-
-            # Powers: -3..3
             e = random.choice([-3, -2, -1, 0, 1, 2, 3])
             if e < 0 and x == Fraction(0, 1):
                 with self.assertRaises(ValueError):
@@ -64,7 +56,6 @@ class FractionOracleSuite(unittest.TestCase):
                 self.assertEqual(x ** e, to_our(X ** e))
 
     def test_ordering_consistency(self):
-        # Check that ordering agrees with Python's Fraction for random values
         random.seed(4242)
         for _ in range(200):
             a, b = random.randint(-RANGE, RANGE), random.randint(-RANGE, RANGE) or 1
